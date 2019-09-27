@@ -1,7 +1,6 @@
 package kr.co.itcen.mysite.repository;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,10 +12,13 @@ import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import kr.co.itcen.mysite.vo.BoardVo;
+import kr.co.itcen.mysite.vo.PaginationUtil;
 import kr.co.itcen.mysite.vo.UserVo;
 
+@Repository
 public class BoardDao {
 	@Autowired
 	private DataSource dataSource;
@@ -31,70 +33,64 @@ public class BoardDao {
 
 	}
 
-	public List<BoardVo> getList(String kwd) {
-
-		List<BoardVo> list = new ArrayList<BoardVo>();
-		BoardVo result = null;
+	public List<BoardVo> getList(String kwd, PaginationUtil pagination) {
+		List<BoardVo> result = new ArrayList<BoardVo>();
 		Connection connection = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 
 		try {
+			connection = dataSource.getConnection();
 			
-
-			String sql = "select board.no,board.title,board.contents,board.hit,board.reg_Date,board.g_no,board.o_no,board.depth,board.user_no,user.name,board.status from board,user where user.no= board.user_no and (board.status='insert' or board.status='modify') and (board.title like ?  or board.contents like ?)";
+			String sql = "select b.no as no, title, name, contents, hit, date_format(reg_date,'%Y-%m-%d %h:%i:%s') as reg_date, depth, status" +
+			        "       from user u, board b" +
+					"      where u.no = b.user_no" +
+			        "        and (b.title like ? or b.contents like ?)" +
+			        "   order by g_no desc, o_no asc" +
+			        "      limit ?, ?";
 			pstmt = connection.prepareStatement(sql);
-			pstmt.setString(1, kwd);
-			pstmt.setString(2, kwd);
+			pstmt.setString(1, "%" + ((kwd == null) ? "" : kwd) + "%");
+			pstmt.setString(2, "%" + ((kwd == null) ? "" : kwd) + "%");
+			pstmt.setInt(3, (pagination.getCurrentPage() - 1) * pagination.getListSize());
+			pstmt.setInt(4, pagination.getListSize());
+//			5. limit 수정
+//			ex ) limit (보여줄 페이지 - 1) * 한 페이지에 보여줄 게시글의 수, 한 페이지에 보여줄 게시글의 수
 			
 			rs = pstmt.executeQuery();
+			
 			while(rs.next()) {
-				Long no = rs.getLong(1);
-				String title = rs.getString(2);
-				String contents = rs.getString(3);
-				Long hit = rs.getLong(4);
-				String reg_date = rs.getString(5);
-				Long g_no = rs.getLong(6);
-				Long o_no = rs.getLong(7);
-				Long depth = rs.getLong(8);
-				Long user_no = rs.getLong(9);
-				String name = rs.getString(10);
-				String status=rs.getString(11);
-				BoardVo vo= new BoardVo();
-				vo.setNo(no);
-				vo.setTitle(title);
+				BoardVo boardVo = new BoardVo();
 				
-				vo.setHit(hit);
-				vo.setRegDate(reg_date);
-				vo.setG_no(g_no);
-				vo.setO_no(o_no);
-				vo.setDepth(depth);
-				vo.setUserNo(user_no);
-				vo.setName(name);		
-				vo.setStatus(status);
-				list.add(vo);	
-							
+				boardVo.setNo(rs.getLong("no"));
+				boardVo.setTitle(rs.getString("title"));
+				boardVo.setName(rs.getString("name"));
+				boardVo.setContents("contents");
+				boardVo.setHit(rs.getLong("hit"));
+				boardVo.setRegDate(rs.getString("reg_date"));
+				boardVo.setDepth(rs.getLong("depth"));
+				boardVo.setStatus(rs.getString("status"));
+				
+				result.add(boardVo);
 			}
-
+						
 		} catch (SQLException e) {
 			System.out.println("error:" + e);
 		} finally {
 			try {
-				if (rs != null) {
+				if(rs != null) {
 					rs.close();
 				}
-				if (pstmt != null) {
+				if(pstmt != null) {
 					pstmt.close();
 				}
-				if (connection != null) {
+				if(connection != null) {
 					connection.close();
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
-
-		return list;
+		return result;
 	}
 
 	public UserVo get(Long no) {
@@ -271,7 +267,52 @@ public class BoardDao {
 		return result;
 	}
 
+	public int getListCount(String kwd) {
+		int count = -1;
+		Connection connection = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 
+		try {
+			connection = dataSource.getConnection();
+			
+			String sql = "select count(*) as 'cnt'" +
+			        "       from user u, board b" +
+					"      where u.no = b.user_no" +
+			        "        and (b.title like ? or b.contents like ?)" +
+			        "   order by g_no desc, o_no asc";
+			pstmt = connection.prepareStatement(sql);
+			pstmt.setString(1, "%" + ((kwd == null) ? "" : kwd) + "%");
+			pstmt.setString(2, "%" + ((kwd == null) ? "" : kwd) + "%");
+			
+//			5. limit 수정
+//			ex ) limit (보여줄 페이지 - 1) * 한 페이지에 보여줄 게시글의 수, 한 페이지에 보여줄 게시글의 수
+			
+			rs = pstmt.executeQuery();
+			
+			if (rs.next()) {
+				count = rs.getInt("cnt");
+			}
+						
+		} catch (SQLException e) {
+			System.out.println("error:" + e);
+		} finally {
+			try {
+				if(rs != null) {
+					rs.close();
+				}
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				if(connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return count;
+	}
 }
 
 

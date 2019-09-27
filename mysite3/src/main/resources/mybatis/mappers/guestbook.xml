@@ -5,16 +5,14 @@
 
 <mapper namespace="guestbook">
 	<select id = "getList" parameterType="long" resultType="guestbookvo">
-		<![CDATA[
-			select no, name, contents, date_format(reg_date,'%Y-%m-%d %h:%i:%s') as regDate from guestbook
-		]]>
-	
-			<if test = "_parameter > 0"> <![CDATA[ where > #{value} ]]> </if>
-			
-			 <![CDATA[
-			  order by no desc
-			  limit 0,5
-			  ]]>
-		
+		<![CDATA[ select no, name, contents, date_format(reg_date,'%Y-%m-%d %h:%i:%s') as regDate from guestbook order by no desc ]]>
 	</select>
+	
+	<insert id="insert" parameterType="guestbookvo">
+		<![CDATA[ insert into guestbook values(null, #{name},#{password} ,#{contents}, now()) ]]>
+	</insert>
+	
+	<delete id="delete" parameterType="guestbookvo">
+		<![CDATA[ delete from guestbook where no = #{no} and password = #{password} ]]>
+	</delete>
 </mapper>

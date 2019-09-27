@@ -40,7 +40,6 @@
 								<tr>
 									<td>[${count - status.index}]</td>
 									<td>${vo.name }</td>
-									<td>${vo.contents }</td>
 									<td>${vo.regDate }</td>
 									<td><a href="${pageContext.servletContext.contextPath }/guestbook/delete?no=${vo.no}">삭제</a></td>
 								</tr>
