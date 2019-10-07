@@ -18,12 +18,18 @@
 	
 	<select id="getByEmailAndPassword1" parameterType="uservo" resultType="uservo" >
 	<![CDATA[
-		select no, name, email from user where email = #{email} and password = #{password}
+		select no, name, email, role from user where email = #{email} and password = #{password}
 	]]>
 	</select>
 	<select id="getByEmailAndPassword2" parameterType="map" resultType="uservo">
 	<![CDATA[
 		select no, name from user where email = #{email} and password = #{password}
+	]]>
+	</select>
+	
+		<select id="getByEmail" parameterType="string" resultType="uservo">
+	<![CDATA[
+		select no, email from user where email = #{email}
 	]]>
 	</select>
 	

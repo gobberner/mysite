@@ -29,15 +29,13 @@ public class ListAction implements Action {
 		List<BoardVo> list = dao.getList(kwd, pagination);
 		request.setAttribute("list", list);
 		request.setAttribute("pagination", pagination);
-		
-		
+			
 //		1. dao 에서 총 게시글의 수를 조회하는 쿼리 작성
 //		int totalCnt = new BoardDao().getListCount(kwd);
 //		PaginationUtil pUtil = new PaginationUtil(/*현재 페이지, 총 게시물의 수totalCnt, 한 페이지에 보여질 게시글의 수10, 페이지 블럭의 페이지 수 5*/);
 		
 //		2. 페이징을 포함한 getList 쿼리 수정
 //		List<BoardVo> list = new BoardDao().getList(kwd, pUtil);
-		
 		
 //		4. 어트리뷰트에 페이징 정보, 키워드 추가
 //		request.setAttribute("kwd", kwd);

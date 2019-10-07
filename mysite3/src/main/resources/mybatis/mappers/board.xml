@@ -4,22 +4,19 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="board">
-	<select id = "getList" parameterType="long" resultType="guestbookvo">
-		<![CDATA[
-			select no, name, contents, date_format(reg_date,'%Y-%m-%d %h:%i:%s') as regDate from guestbook
-		]]>
-	
-			<if test = "_parameter > 0"> <![CDATA[ where > #{value} ]]> </if>
-		
-			 <![CDATA[
-			  order by no desc
-			  limit 0,5
-		  ]]>
-	</select>
-	
 	<insert id="insert" parameterType="boardvo">
 	<![CDATA[
-		insert into board values(null,#{title},#{contents},0,date_format(now(),'%Y-%m-%d %h:%i:%s'),ifnull((select max(#{g_no}) from board as b)+1,1) , 1 , 0 , #{userNo } as user_no , 'insert' )
+		insert into board
+		values (null,
+				#{title},
+				#{contents},
+				0,
+				date_format(now(),'%Y-%m-%d %h:%i:%s'),
+				ifnull((select max(g_no) from board as b)+1,1),
+				1,
+				0,
+				#{userNo},
+				'insert')
 	]]>
 	<selectKey keyProperty="no" resultType="long">
 	<![CDATA[
@@ -28,4 +25,77 @@
 	</selectKey>
 	</insert>
 	
+	<select id = "getListCount" parameterType="String" resultType="int">
+		<![CDATA[
+			select count(*) as cnt 
+			from user u, board b 
+			where u.no = b.user_no 
+			and (b.title like concat('%',#{kwd},'%')) 
+			or (b.contents like concat('%',#{kwd},'%'))
+	       order by g_no desc, o_no asc
+		]]>
+	
+<!-- 			<if test = "_parameter > 0"> <![CDATA[ where > #{value} ]]> </if>
+		
+			 <![CDATA[
+			  order by no desc
+			  limit 0,5
+		  ]]> -->
+	</select>
+	
+	<select id = "getList" parameterType="map" resultType="boardvo">
+		<![CDATA[
+			select b.no as no, title, name, contents, hit, date_format(reg_date,'%Y-%m-%d %h:%i:%s') as regDate, depth, status 
+			               from user u, board b
+					      where u.no = b.user_no 
+			                and (b.title like concat('%',#{kwd},'%') or b.contents like concat('%',#{kwd},'%'))
+			           order by g_no desc, o_no asc 
+			              limit #{start}, #{end}
+		]]>
+	</select>
+		<select id = "getSelect" parameterType="long" resultType="boardvo">
+		<![CDATA[
+			select g_no,o_no,depth,user_no as userNo from board where no= #{_parameter}
+		]]>
+	</select>
+
+	<select id = "view" parameterType="long" resultType="boardvo">
+		<![CDATA[
+			select title,contents,user_no as userNo from board where no= #{no}
+		]]>
+	</select>
+
+	<update id="updateRequest" parameterType="boardvo">
+		
+		<![CDATA[
+			update board set o_no=o_no+1 where g_no = #{g_no} and o_no >= #{o_no}
+		]]>
+	</update>
+	
+	<insert id="insertRequest" parameterType="boardvo">
+	<![CDATA[
+		insert into board 
+		values(	null,
+				#{title},
+				#{contents},
+				0,
+				now(),
+				#{g_no},
+				#{o_no},
+				#{depth},
+				#{userNo},
+				'insert')
+	]]>
+	</insert>
+		<update id="modify" parameterType="boardvo">
+		<![CDATA[
+			update board set status='modify',title=#{title},contents=#{contents} where no = #{no}
+		]]>
+	</update>
+
+	<update id="delete" parameterType="long">
+		<![CDATA[
+			update board set status='delete' where no = #{no}
+		]]>
+	</update>
 </mapper>

@@ -36,7 +36,7 @@
 						<td>${(count-status.index) }</td>
 						
 						<td style='padding-left:${50*vo.depth}px'>
-						<c:if test ="${vo.o_no ne 1 }">
+						<c:if test ="${vo.depth >0 }">
 							<img src = "${pageContext.servletContext.contextPath}/assets/images/reply.png"/>
 						</c:if>
 						<c:choose>
@@ -44,13 +44,14 @@
 								삭제된 글입니다.
 							</c:when>
 							<c:otherwise>
-								<a href="${pageContext.servletContext.contextPath }/board?a=view&no=${vo.no}&userNo=${vo.userNo}">${vo.title}</a></td>
+								<a href="${pageContext.servletContext.contextPath }/board/view/${vo.no}">${vo.title}</a>
 							</c:otherwise>
 						</c:choose>
+						</td>
 						<td>${vo.name }</td>
 						<td>${vo.hit}</td>
 						<td>${vo.regDate}</td>						
-						<td><a href="${pageContext.servletContext.contextPath }/board?a=delete&no=${vo.no}" class="del">삭제</a></td>
+						<td><a href="${pageContext.servletContext.contextPath }/board/delete/${vo.no}" class="del">삭제</a></td>
 					</tr>
 					</c:forEach>
 				</table>

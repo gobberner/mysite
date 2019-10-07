@@ -5,19 +5,17 @@
 
 <configuration>
 
-
-
 <typeAliases>
 	<typeAlias type="kr.co.itcen.mysite.vo.UserVo" alias="uservo"/>
 	<typeAlias type="kr.co.itcen.mysite.vo.GuestbookVo" alias="guestbookvo"/>
 	<typeAlias type="kr.co.itcen.mysite.vo.BoardVo" alias="boardvo"/>
+	<typeAlias type="kr.co.itcen.mysite.vo.PaginationUtil" alias="pagevo"/>
 </typeAliases>
 
 <mappers>
 	<mapper resource="mybatis/mappers/user.xml" />
 	<mapper resource="mybatis/mappers/guestbook.xml" />
 	<mapper resource="mybatis/mappers/board.xml" />
-	
 </mappers>
 
 </configuration>

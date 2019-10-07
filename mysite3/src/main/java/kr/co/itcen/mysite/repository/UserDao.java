@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StopWatch;
 
 import kr.co.itcen.mysite.exception.UserDaoException;
 import kr.co.itcen.mysite.vo.UserVo;
@@ -42,7 +43,13 @@ public class UserDao {
 //		return connection;
 //	}
 	public Boolean insert(UserVo vo) throws UserDaoException{
+		StopWatch sw = new StopWatch();
+		sw.start();
 		int count = sqlSession.insert("user.insert",vo);
+		
+		sw.stop();
+		Long totalTime = sw.getTotalTimeMillis();
+		System.out.println(totalTime);
 		return count == 1;
 	}
 	
@@ -123,6 +130,11 @@ public class UserDao {
 		map.put("password",password);
 		
 		UserVo result = sqlSession.selectOne("user.getByEmailAndPassword2",map);
+		return result;
+	}
+
+	public UserVo get(String email) {
+		UserVo result = sqlSession.selectOne("user.getByEmail",email);
 		return result;
 	}
 	

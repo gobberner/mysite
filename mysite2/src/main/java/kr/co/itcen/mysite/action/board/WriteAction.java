@@ -33,11 +33,11 @@ public class WriteAction implements Action {
 			return;
 		}
 		vo.setUserNo(authUser.getNo());	
-		new BoardDao().insert(vo);
-		if("".equals(request.getParameter("no"))) {
+		if("".equals(request.getParameter("no"))) {//글쓰기
+			new BoardDao().insert(vo);
 			WebUtils.redirect(request, response, request.getContextPath()+"/board");
 		}
-		else {
+		else {//답글쓰기
 			Long no=Long.parseLong(request.getParameter("no"));
 			BoardVo newVo = new BoardDao().getSelect(no);
 			vo.setG_no(newVo.getG_no());

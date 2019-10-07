@@ -26,7 +26,7 @@
 						<td class="label">내용</td>
 						<td>
 							<div class="view-content">
-								${vo.context }
+								${vo.contents }
 							</div>
 						</td>
 					</tr>
@@ -35,10 +35,10 @@
 					<a href="${pageContext.servletContext.contextPath }/board">글목록</a>
 					
 					<c:if test="${not empty authUser && authUser.no == vo.userNo}">
-						<a href="${pageContext.servletContext.contextPath }/board?a=updateform&no=${vo.no}&userNo=${vo.userNo}">글수정</a>
+						<a href="${pageContext.servletContext.contextPath }/board/update/${vo.no}">글수정</a>
 					</c:if>
 					<c:if test="${not empty authUser}">
-						<a href="${pageContext.servletContext.contextPath }/board?a=request&no=${vo.no}&userNo=${vo.userNo}">답글</a>
+						<a href="${pageContext.servletContext.contextPath }/board/write/${vo.no}">답글</a>
 					</c:if>
 				</div>
 			</div>

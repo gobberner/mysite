@@ -19,8 +19,7 @@ public class ViewAction implements Action {
 		if(!"".equals(request.getParameter("no"))) {
 			no = Long.parseLong(request.getParameter("no"));
 		}
-		String title=request.getParameter("title");
-		String context = request.getParameter("content");
+
 		BoardVo vo = new BoardDao().view(no);
 		vo.setNo(no);
 		request.setAttribute("vo", vo);

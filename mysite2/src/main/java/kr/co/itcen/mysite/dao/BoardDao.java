@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kr.co.itcen.mysite.vo.BoardVo;
+import kr.co.itcen.mysite.vo.GuestbookVo;
 import kr.co.itcen.mysite.vo.UserVo;
 import kr.co.itcen.web.mvc.PaginationUtil;
 
@@ -524,6 +525,38 @@ public class BoardDao {
 			}
 		}
 		return result;
+	}
+	public void delete(BoardVo vo) {
+		Connection connection = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			connection = getConnection();
+			
+			String sql =
+				" delete" +
+				"   from guestbook" +
+				"  where no = ?" +
+				"    and password= ?";
+			
+			pstmt = connection.prepareStatement(sql);
+			pstmt.setLong(1, vo.getNo());
+			pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			System.out.println("error:" + e);
+		} finally {
+			try {
+				if(pstmt != null) {
+					pstmt.close();
+				}
+				if(connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}		
 	}
 }
 

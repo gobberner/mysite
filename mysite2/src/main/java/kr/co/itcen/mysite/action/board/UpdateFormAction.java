@@ -15,7 +15,6 @@ public class UpdateFormAction implements Action  {
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String userNo_ = request.getParameter("userNo");
 		String no_ = request.getParameter("no");
 		
 		BoardVo boardVo = new BoardDao().view(Long.parseLong(no_));
